@@ -3,12 +3,25 @@ hauteur_grille = int(sys.argv[1])
 largeur_grille = int(sys.argv[2])
 
 class MineSweeper ():
+    def __init__(self, is_playing = False):
+        self.is_playing  = is_playing
     def open(self, x, y):
-        print("Ouvrir la case", x, y)
+        if self.is_playing:
+            print("Ouvrir la case", x, y)
+        else :
+            raise Exception("La partie n'est pas en cours")
 
     def flag(self, x, y):
-        print("Flagger la case", x, y)
+        if self.is_playing:
+            print("Flagger la case", x, y)
+        else:
+            raise Exception("La partie n'est pas en cours")
+
+    def newgame(self, hauteur = 0, largeur = 0):
+        self.is_playing = True
+
 ms = MineSweeper()
+ms.newgame()
 while True:
     coordinput = input("veuillez choisir 'x y' ou 'F x y' pour mettre un flag")
     coord = coordinput.rsplit(" ")
