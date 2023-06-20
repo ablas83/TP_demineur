@@ -5,12 +5,21 @@ largeur_grille = int(sys.argv[2])
 
 
 class Tile(metaclass=ABCMeta):
-    def __init__(self, _grid, _x, _y, is_open, is_flagged):
+    def __init__(self, _grid, _x, _y):
         self._grid = _grid
         self._x = _x
         self._y = _y
-        self.is_open = is_open
-        self.is_flagged = is_flagged
+        self.is_open = False
+        self.is_flagged = False
+
+class Tilemine(Tile):
+    pass
+
+class TileHint(Tile):
+    def __init__(self, _grid, _x, _y):
+        super().__init__(_grid, _x, _y)
+        self.hint = 0
+
 class Grid():
     pass
 class MineSweeper ():
