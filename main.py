@@ -1,7 +1,16 @@
 import sys
+from abc import ABCMeta
 hauteur_grille = int(sys.argv[1])
 largeur_grille = int(sys.argv[2])
 
+
+class Tile(metaclass=ABCMeta):
+    def __init__(self, _grid, _x, _y, is_open, is_flagged):
+        self._grid = _grid
+        self._x = _x
+        self._y = _y
+        self.is_open = is_open
+        self.is_flagged = is_flagged
 class Grid():
     pass
 class MineSweeper ():
