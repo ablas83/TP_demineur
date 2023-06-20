@@ -1,5 +1,6 @@
 import sys
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
+
 hauteur_grille = int(sys.argv[1])
 largeur_grille = int(sys.argv[2])
 
@@ -11,6 +12,14 @@ class Tile(metaclass=ABCMeta):
         self._y = _y
         self.is_open = False
         self.is_flagged = False
+    @abstractmethod
+    def __str__(self):
+        if self.is_flagged:
+            return "F"
+        if self.is_open == False:
+            return "#"
+        if self.is_open:
+            raise NotImplementedError("La case est déjà ouverte")
 
 class Tilemine(Tile):
     pass
