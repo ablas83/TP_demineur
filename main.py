@@ -2,6 +2,8 @@ import sys
 hauteur_grille = int(sys.argv[1])
 largeur_grille = int(sys.argv[2])
 
+class Grid():
+    pass
 class MineSweeper ():
     def __init__(self, is_playing = False):
         self.is_playing  = is_playing
@@ -19,6 +21,7 @@ class MineSweeper ():
 
     def newgame(self, hauteur = 0, largeur = 0):
         self.is_playing = True
+        grid = Grid()
 
 ms = MineSweeper()
 
