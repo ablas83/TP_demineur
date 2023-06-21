@@ -42,7 +42,12 @@ class TileHint(Tile):
                 return chr(self.hint)
 
 class Grid():
-    pass
+    def __init__(self, hauteur = hauteur_grille, largeur = largeur_grille):
+        self._tiles = [[]]
+        for i in range(hauteur):
+            for j in range(largeur):
+                self._tiles[i][j] = TileHint(self, i, j)
+
 class MineSweeper ():
     def __init__(self, is_playing = False):
         self.is_playing  = is_playing
