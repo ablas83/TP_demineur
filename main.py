@@ -1,3 +1,4 @@
+import random
 import sys
 from abc import ABCMeta, abstractmethod
 
@@ -44,9 +45,18 @@ class TileHint(Tile):
 class Grid():
     def __init__(self, hauteur = hauteur_grille, largeur = largeur_grille):
         self._tiles = [[]]
+        self.hauteur = hauteur
+        self.largeur = largeur
         for i in range(hauteur):
             for j in range(largeur):
                 self._tiles[i][j] = TileHint(self, i, j)
+    def _mines_coord(self):
+        tableau = list()
+        for i in range(self.hauteur):
+            for j in range(self.largeur):
+                tableau.append((i, j))
+        taille = int(len(tableau) * 0.1)
+        return random.sample(tableau, taille)
 
 class MineSweeper ():
     def __init__(self, is_playing = False):
