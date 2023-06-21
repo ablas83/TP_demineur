@@ -8,7 +8,7 @@ largeur_grille = int(sys.argv[2])
 
 class Tile(metaclass=ABCMeta):
     def __init__(self, _grid, _x, _y):
-        self._grid = _grid
+        self._grid: Grid = _grid
         self._x = _x
         self._y = _y
         self.is_open = False
@@ -32,7 +32,17 @@ class Tilemine(Tile):
 class TileHint(Tile):
     def __init__(self, _grid, _x, _y):
         super().__init__(_grid, _x, _y)
-        self.hint = 0
+        #self.hint = 0
+    @property
+    def hint(self):
+        mine = 0
+        for i in range(self._x - 1, self._x + 2):
+            for j in range(self._y - 1, self._y + 2):
+                if (i > -1 and j > -1 and i < len(self._grid.hauteur) and j < len(self._grid.largeur)):
+                    if isinstance(self._grid.get_tile(i,j), Tilemine):
+                        mine += 1
+        return mine
+
     def __str__(self):
         if self.is_open == False:
             super().__str__()
