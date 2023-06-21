@@ -50,6 +50,11 @@ class Grid():
         for i in range(hauteur):
             for j in range(largeur):
                 self._tiles[i][j] = TileHint(self, i, j)
+        mines_coord = self._mines_coord()
+        for k in mines_coord:
+            x= int(k[0])
+            y= int(k[1])
+            self._tiles [x][y] = Tilemine(self,x,y)
     def _mines_coord(self):
         tableau = list()
         for i in range(self.hauteur):
