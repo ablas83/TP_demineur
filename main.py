@@ -22,12 +22,24 @@ class Tile(metaclass=ABCMeta):
             raise NotImplementedError("La case est déjà ouverte")
 
 class Tilemine(Tile):
-    pass
+    def __str__(self):
+        if self.is_open == False:
+            super().__str__()
+        else :
+            return "O"
 
 class TileHint(Tile):
     def __init__(self, _grid, _x, _y):
         super().__init__(_grid, _x, _y)
         self.hint = 0
+    def __str__(self):
+        if self.is_open == False:
+            super().__str__()
+        else :
+            if self.hint == 0:
+                return " "
+            else:
+                return chr(self.hint)
 
 class Grid():
     pass
