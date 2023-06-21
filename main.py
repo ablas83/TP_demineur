@@ -62,6 +62,8 @@ class Grid():
                 tableau.append((i, j))
         taille = int(len(tableau) * 0.1)
         return random.sample(tableau, taille)
+    def get_tile(self, x,y):
+        return self._tiles[x][y]
 
 class MineSweeper ():
     def __init__(self, is_playing = False):
