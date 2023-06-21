@@ -17,15 +17,16 @@ class Tile(metaclass=ABCMeta):
     def __str__(self):
         if self.is_flagged:
             return "F"
-        if self.is_open == False:
-            return "#"
-        if self.is_open:
+        elif self.is_open == False:
+            return '#'
+        elif self.is_open:
             raise NotImplementedError("La case est déjà ouverte")
+
 
 class Tilemine(Tile):
     def __str__(self):
         if self.is_open == False:
-            super().__str__()
+            return super().__str__()
         else :
             return "O"
 
@@ -49,22 +50,19 @@ class TileHint(Tile):
             return self._hint
 
     def __str__(self):
-        if self.is_open == False:
-            super().__str__()
+        if not self.is_open:
+           return super().__str__()
         else :
             if self.hint == 0:
                 return " "
             else:
-                return chr(self.hint)
+                return str(self.hint)
 
 class Grid():
     def __init__(self, hauteur = hauteur_grille, largeur = largeur_grille):
-        self._tiles = [[]]
+        self._tiles =[[TileHint(self, i, j) for i in range(largeur)] for j in range(hauteur)]
         self.hauteur = hauteur
         self.largeur = largeur
-        for i in range(hauteur):
-            for j in range(largeur):
-                self._tiles[i][j] = TileHint(self, i, j)
         mines_coord = self._mines_coord()
         for k in mines_coord:
             x= int(k[0])
@@ -79,7 +77,13 @@ class Grid():
         return random.sample(tableau, taille)
     def get_tile(self, x,y):
         return self._tiles[x][y]
-
+    def __str__(self):
+        chaine_caractere = ""
+        for i in range(self.largeur):
+            for j in range(self.hauteur):
+                chaine_caractere += str(self._tiles[i][j])
+            chaine_caractere += "\n"
+        return chaine_caractere
 class MineSweeper ():
     def __init__(self, is_playing = False):
         self.is_playing  = is_playing
@@ -98,6 +102,7 @@ class MineSweeper ():
     def newgame(self, hauteur = 0, largeur = 0):
         self.is_playing = True
         grid = Grid()
+        print(grid)
 
 ms = MineSweeper()
 
