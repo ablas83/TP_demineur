@@ -64,6 +64,7 @@ class Grid():
         self.hauteur = hauteur
         self.largeur = largeur
         self.remaining =0
+        self.isMine = False
         mines_coord = self._mines_coord()
         for k in mines_coord:
             x= int(k[0])
@@ -87,6 +88,8 @@ class Grid():
         self._tiles[x][y].is_open = True
         if isinstance(self._tiles[x][y], TileHint):
             self.remaining -= 1
+        else:
+            self.isMine=True
 
     def __str__(self):
         chaine_caractere = ""
@@ -131,6 +134,9 @@ class MineSweeper ():
 
     def is_win(self):
         return self._grid.remaining == 0
+
+    def is_lost(self):
+        return self._grid.isMine
 
 ms = MineSweeper()
 
