@@ -63,6 +63,7 @@ class Grid():
         self._tiles =[[TileHint(self, i, j) for i in range(hauteur)] for j in range(largeur)]
         self.hauteur = hauteur
         self.largeur = largeur
+        self.remaining =0
         mines_coord = self._mines_coord()
         for k in mines_coord:
             x= int(k[0])
@@ -74,6 +75,7 @@ class Grid():
             for j in range(self.hauteur):
                 tableau.append((i, j))
         taille = int(len(tableau) * 0.1)
+        self.remaining = len(tableau) - taille
         return random.sample(tableau, taille)
     def get_tile(self, x,y):
         return self._tiles[x][y]
@@ -83,6 +85,9 @@ class Grid():
         if(self._tiles[x][y].is_flagged):
             raise Exception("la case est flaggée")
         self._tiles[x][y].is_open = True
+        if isinstance(self._tiles[x][y], TileHint):
+            self.remaining -= 1
+
     def __str__(self):
         chaine_caractere = ""
         for i in range(self.largeur):
