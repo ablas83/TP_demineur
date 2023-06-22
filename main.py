@@ -129,6 +129,9 @@ class MineSweeper ():
         self._grid = Grid()
         print(self._grid)
 
+    def is_win(self):
+        return self._grid.remaining == 0
+
 ms = MineSweeper()
 
 while True:
