@@ -90,13 +90,20 @@ class Grid():
                 chaine_caractere += str(self._tiles[i][j])
             chaine_caractere += "\n"
         return chaine_caractere
+    def toggle_flag(self, x, y):
+        if self._tiles[x][y].is_open:
+            raise Exception("la case est déjà ouverte")
+        if self._tiles[x][y].is_flagged:
+            self._tiles[x][y].is_flagged = False
+        else:
+            self._tiles[x][y].is_flagged = True
 class MineSweeper ():
     def __init__(self):
         self.is_playing = False
         self._grid:Grid = None
     def open(self, x, y):
         if self.is_playing:
-            if x >= self._grid.largeur and y >= self._grid.hauteur :
+            if x >= self._grid.largeur or y >= self._grid.hauteur :
                 raise Exception("Les coordonnées sont hors la grille")
             self._grid.open(x,y)
             print(self._grid)
@@ -105,7 +112,10 @@ class MineSweeper ():
 
     def flag(self, x, y):
         if self.is_playing:
-            print("Flagger la case", x, y)
+            if x >= self._grid.largeur or y >= self._grid.hauteur :
+                raise Exception("Les coordonnées sont hors la grille")
+            self._grid.toggle_flag(x,y)
+            print(self._grid)
         else:
             raise Exception("La partie n'est pas en cours")
 
@@ -135,5 +145,5 @@ while True:
     elif(coordinput=="newgame"):
         ms.newgame(hauteur_grille,largeur_grille)
     else:
-        raise ValueError("syntaxe invalide")
+        print("syntaxe invalide")
 
