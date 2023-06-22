@@ -82,20 +82,22 @@ class Grid:
         self.largeur = largeur
         self.remaining = 0
         self.isMine = False  #pylint disable: invalid-name
-        mines_coord = self._mines_coord()
-        for k in mines_coord:
-            x = int(k[0])  #pylint disable: invalid-name
-            y = int(k[1])  #pylint disable: invalid-name
-            self._tiles[x][y] = Tilemine(self, x, y)
 
-    def _mines_coord(self):
+    def _mines_coord(self, x, y):
         tableau = list()
         for i in range(self.largeur):
             for j in range(self.hauteur):
-                tableau.append((i, j))
-        taille = int(len(tableau) * 0.1)
-        self.remaining = len(tableau) - taille
+                if i != x and j != y:
+                    tableau.append((i, j))
+        taille = int((self.hauteur * self.largeur) * 0.1)
+        self.remaining = (self.largeur * self.hauteur) - taille
         return random.sample(tableau, taille)
+    def generateGrid(self, x, y):
+        mines_coord = self._mines_coord(x, y)
+        for k in mines_coord:
+            x = int(k[0])
+            y = int(k[1])
+            self._tiles[x][y] = Tilemine(self, x, y)
 
     def get_tile(self, x, y):  #pylint disable: invalid-name
         return self._tiles[x][y]
@@ -135,10 +137,14 @@ class Grid:
 class MineSweeper:
     def __init__(self):
         self.is_playing = False
+        self.first_exec = False
         self._grid: Grid = None
 
     def open(self, x, y):  #pylint disable: invalid-name
         if self.is_playing:
+            if not self.first_exec:
+                self._grid.generateGrid(x, y)
+                self.first_exec = True
             if x >= self._grid.largeur or y >= self._grid.hauteur:
                 raise Exception("Les coordonnées sont hors de la grille")
             self._grid.open(x, y)
@@ -150,6 +156,8 @@ class MineSweeper:
         else:
             raise Exception("La partie n'est pas en cours")
         self.is_playing = not self.is_win() and not self.is_lost()
+        if not self.is_playing:
+            self.first_exec = False
 
     def flag(self, x, y):  #pylint disable: invalid-name
         if self.is_playing:
@@ -162,6 +170,7 @@ class MineSweeper:
 
     def newgame(self, hauteur=0, largeur=0):
         self.is_playing = True
+        self.first_exec = False
         self._grid = Grid()
         print(self._grid)
 
