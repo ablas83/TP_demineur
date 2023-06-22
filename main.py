@@ -59,6 +59,16 @@ class TileHint(Tile):
             else:
                 return str(self.hint)
 
+    def open(self):
+        super().open()
+        if self.hint == 0:
+            for i in range(self._y - 1, self._y + 2):
+                for j in range(self._x - 1, self._x + 2):
+                    if (i > -1 and j > -1 and i < (self._grid.largeur) and j < (self._grid.hauteur)):
+                        if (i != self._y or j != self._x):
+                            self._grid._open_full(i, j)
+
+
 class Grid():
     def __init__(self, hauteur = hauteur_grille, largeur = largeur_grille):
         self._tiles =[[TileHint(self, i, j) for i in range(hauteur)] for j in range(largeur)]
@@ -87,10 +97,7 @@ class Grid():
         if(self._tiles[x][y].is_flagged):
             raise Exception("la case est flaggée")
         self._open_full(x,y)
-        if isinstance(self._tiles[x][y], TileHint):
-            self.remaining -= 1
-        else:
-            self.isMine=True
+
 
     def __str__(self):
         chaine_caractere = ""
@@ -107,7 +114,12 @@ class Grid():
         else:
             self._tiles[x][y].is_flagged = True
     def _open_full(self,x, y):
-        self._tiles[x][y].open()
+        if not self._tiles[x][y].is_open:
+            self._tiles[x][y].open()
+            if isinstance(self._tiles[x][y], TileHint):
+                self.remaining -= 1
+            else:
+                self.isMine=True
 class MineSweeper ():
     def __init__(self):
         self.is_playing = False
@@ -149,7 +161,7 @@ class MineSweeper ():
 ms = MineSweeper()
 
 while True:
-    coordinput = input("veuillez choisir 'x y' ou 'F x y' pour mettre un flag ou quit ou newgame")
+    coordinput = input("veuillez choisir 'x y' ou 'F x y' pour mettre un flag ou quit ou newgame ")
     coord = coordinput.rsplit(" ")
     if len(coord) == 2 and isinstance(int(coord[0]), int) and isinstance(int(coord[1]), int) :
         try:
