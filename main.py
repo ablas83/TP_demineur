@@ -114,9 +114,14 @@ class MineSweeper ():
             if x >= self._grid.largeur or y >= self._grid.hauteur :
                 raise Exception("Les coordonnées sont hors la grille")
             self._grid.open(x,y)
+            if self.is_win():
+                print("gagne!")
+            if self.is_lost():
+                print("perdu!")
             print(self._grid)
         else:
             raise Exception("La partie n'est pas en cours")
+        self.is_playing = not self.is_win() and not self.is_lost()
 
     def flag(self, x, y):
         if self.is_playing:
