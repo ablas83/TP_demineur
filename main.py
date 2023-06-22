@@ -2,8 +2,8 @@ import random
 import sys
 from abc import ABCMeta, abstractmethod
 
-hauteur_grille = int(sys.argv[1])
-largeur_grille = int(sys.argv[2])
+hauteur_grille = int(sys.argv[1])  #pylint disable: invalid-name
+largeur_grille = int(sys.argv[2])  #pylint disable: invalid-name
 
 
 class Tile(metaclass=ABCMeta):
@@ -13,23 +13,27 @@ class Tile(metaclass=ABCMeta):
         self._y = _y
         self.is_open = False
         self.is_flagged = False
+
     @abstractmethod
     def __str__(self):
         if self.is_flagged:
             return "F"
-        elif self.is_open == False:
-            return '#'
+        elif not self.is_open:
+            return "#"
         elif self.is_open:
             raise NotImplementedError("La case est déjà ouverte")
+
     def open(self):
         self.is_open = True
 
+
 class Tilemine(Tile):
     def __str__(self):
-        if self.is_open == False:
+        if not self.is_open:
             return super().__str__()
-        else :
+        else:
             return "O"
+
 
 class TileHint(Tile):
     def __init__(self, _grid, _x, _y):
@@ -42,7 +46,7 @@ class TileHint(Tile):
         if self._hint is None:
             for i in range(self._y - 1, self._y + 2):
                 for j in range(self._x - 1, self._x + 2):
-                    if (i > -1 and j > -1 and i < (self._grid.largeur) and j < (self._grid.hauteur)):
+                    if -1 < i < self._grid.largeur and -1 < j < self._grid.hauteur:
                         if isinstance(self._grid.get_tile(i, j), Tilemine):
                             mine += 1
             self._hint = mine
@@ -52,8 +56,8 @@ class TileHint(Tile):
 
     def __str__(self):
         if not self.is_open:
-           return super().__str__()
-        else :
+            return super().__str__()
+        else:
             if self.hint == 0:
                 return " "
             else:
@@ -64,23 +68,26 @@ class TileHint(Tile):
         if self.hint == 0:
             for i in range(self._y - 1, self._y + 2):
                 for j in range(self._x - 1, self._x + 2):
-                    if (i > -1 and j > -1 and i < (self._grid.largeur) and j < (self._grid.hauteur)):
-                        if (i != self._y or j != self._x):
+                    if -1 < i < self._grid.largeur and -1 < j < self._grid.hauteur:
+                        if i != self._y or j != self._x:
                             self._grid._open_full(i, j)
 
 
-class Grid():
-    def __init__(self, hauteur = hauteur_grille, largeur = largeur_grille):
-        self._tiles =[[TileHint(self, i, j) for i in range(hauteur)] for j in range(largeur)]
+class Grid:
+    def __init__(self, hauteur=hauteur_grille, largeur=largeur_grille):
+        self._tiles = [
+            [TileHint(self, i, j) for i in range(hauteur)] for j in range(largeur)
+        ]
         self.hauteur = hauteur
         self.largeur = largeur
-        self.remaining =0
-        self.isMine = False
+        self.remaining = 0
+        self.isMine = False  #pylint disable: invalid-name
         mines_coord = self._mines_coord()
         for k in mines_coord:
-            x= int(k[0])
-            y= int(k[1])
-            self._tiles [x][y] = Tilemine(self,x,y)
+            x = int(k[0])  #pylint disable: invalid-name
+            y = int(k[1])  #pylint disable: invalid-name
+            self._tiles[x][y] = Tilemine(self, x, y)
+
     def _mines_coord(self):
         tableau = list()
         for i in range(self.largeur):
@@ -89,15 +96,16 @@ class Grid():
         taille = int(len(tableau) * 0.1)
         self.remaining = len(tableau) - taille
         return random.sample(tableau, taille)
-    def get_tile(self, x,y):
-        return self._tiles[x][y]
-    def open(self, x,y):
-        if(self._tiles[x][y].is_open):
-            raise Exception("la case est deja ouverte")
-        if(self._tiles[x][y].is_flagged):
-            raise Exception("la case est flaggée")
-        self._open_full(x,y)
 
+    def get_tile(self, x, y):  #pylint disable: invalid-name
+        return self._tiles[x][y]
+
+    def open(self, x, y):  #pylint disable: invalid-name
+        if self._tiles[x][y].is_open:
+            raise Exception("la case est deja ouverte")
+        if self._tiles[x][y].is_flagged:
+            raise Exception("la case est flaggée")
+        self._open_full(x, y)
 
     def __str__(self):
         chaine_caractere = ""
@@ -106,48 +114,53 @@ class Grid():
                 chaine_caractere += str(self._tiles[i][j])
             chaine_caractere += "\n"
         return chaine_caractere
-    def toggle_flag(self, x, y):
+
+    def toggle_flag(self, x, y):  #pylint disable: invalid-name
         if self._tiles[x][y].is_open:
             raise Exception("la case est déjà ouverte")
         if self._tiles[x][y].is_flagged:
             self._tiles[x][y].is_flagged = False
         else:
             self._tiles[x][y].is_flagged = True
-    def _open_full(self,x, y):
+
+    def _open_full(self, x, y):  #pylint disable: invalid-name
         if not self._tiles[x][y].is_open:
             self._tiles[x][y].open()
             if isinstance(self._tiles[x][y], TileHint):
                 self.remaining -= 1
             else:
-                self.isMine=True
-class MineSweeper ():
+                self.isMine = True
+
+
+class MineSweeper:
     def __init__(self):
         self.is_playing = False
-        self._grid:Grid = None
-    def open(self, x, y):
+        self._grid: Grid = None
+
+    def open(self, x, y):  #pylint disable: invalid-name
         if self.is_playing:
-            if x >= self._grid.largeur or y >= self._grid.hauteur :
-                raise Exception("Les coordonnées sont hors la grille")
-            self._grid.open(x,y)
+            if x >= self._grid.largeur or y >= self._grid.hauteur:
+                raise Exception("Les coordonnées sont hors de la grille")
+            self._grid.open(x, y)
             if self.is_win():
-                print("gagne!")
+                print("Gagné!")
             if self.is_lost():
-                print("perdu!")
+                print("Perdu!")
             print(self._grid)
         else:
             raise Exception("La partie n'est pas en cours")
         self.is_playing = not self.is_win() and not self.is_lost()
 
-    def flag(self, x, y):
+    def flag(self, x, y):  #pylint disable: invalid-name
         if self.is_playing:
-            if x >= self._grid.largeur or y >= self._grid.hauteur :
-                raise Exception("Les coordonnées sont hors la grille")
-            self._grid.toggle_flag(x,y)
+            if x >= self._grid.largeur or y >= self._grid.hauteur:
+                raise Exception("Les coordonnées sont hors de la grille")
+            self._grid.toggle_flag(x, y)
             print(self._grid)
         else:
             raise Exception("La partie n'est pas en cours")
 
-    def newgame(self, hauteur = 0, largeur = 0):
+    def newgame(self, hauteur=0, largeur=0):
         self.is_playing = True
         self._grid = Grid()
         print(self._grid)
@@ -158,26 +171,36 @@ class MineSweeper ():
     def is_lost(self):
         return self._grid.isMine
 
+
 ms = MineSweeper()
 
 while True:
-    coordinput = input("veuillez choisir 'x y' ou 'F x y' pour mettre un flag ou quit ou newgame ")
+    coordinput = input(
+        "Veuillez choisir 'x y' ou 'F x y' pour mettre un flag, ou 'quit' ou 'newgame': "
+    )
     coord = coordinput.rsplit(" ")
-    if len(coord) == 2 and isinstance(int(coord[0]), int) and isinstance(int(coord[1]), int) :
+    if (
+        len(coord) == 2
+        and isinstance(int(coord[0]), int)
+        and isinstance(int(coord[1]), int)
+    ):
         try:
             ms.open(int(coord[0]), int(coord[1]))
         except Exception as e:
             print(str(e))
-
-    elif len(coord) == 3 and coord[0] == "F" and isinstance(int(coord[1]), int) and isinstance(int(coord[2]), int):
+    elif (
+        len(coord) == 3
+        and coord[0] == "F"
+        and isinstance(int(coord[1]), int)
+        and isinstance(int(coord[2]), int)
+    ):
         try:
             ms.flag(int(coord[1]), int(coord[2]))
         except Exception as e:
             print(str(e))
-    elif (coordinput=="quit"):
+    elif coordinput == "quit":
         break
-    elif(coordinput=="newgame"):
-        ms.newgame(hauteur_grille,largeur_grille)
+    elif coordinput == "newgame":
+        ms.newgame(hauteur_grille, largeur_grille)
     else:
-        print("syntaxe invalide")
-
+        print("Syntaxe invalide")
