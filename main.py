@@ -39,9 +39,9 @@ class TileHint(Tile):
     def hint(self):
         mine = 0
         if self._hint is None:
-            for i in range(self._x - 1, self._x + 2):
-                for j in range(self._y - 1, self._y + 2):
-                    if (i > -1 and j > -1 and i < len(self._grid.hauteur) and j < len(self._grid.largeur)):
+            for i in range(self._y - 1, self._y + 2):
+                for j in range(self._x - 1, self._x + 2):
+                    if (i > -1 and j > -1 and i < (self._grid.largeur) and j < (self._grid.hauteur)):
                         if isinstance(self._grid.get_tile(i, j), Tilemine):
                             mine += 1
             self._hint = mine
@@ -60,7 +60,7 @@ class TileHint(Tile):
 
 class Grid():
     def __init__(self, hauteur = hauteur_grille, largeur = largeur_grille):
-        self._tiles =[[TileHint(self, i, j) for i in range(largeur)] for j in range(hauteur)]
+        self._tiles =[[TileHint(self, i, j) for i in range(hauteur)] for j in range(largeur)]
         self.hauteur = hauteur
         self.largeur = largeur
         mines_coord = self._mines_coord()
@@ -70,13 +70,19 @@ class Grid():
             self._tiles [x][y] = Tilemine(self,x,y)
     def _mines_coord(self):
         tableau = list()
-        for i in range(self.hauteur):
-            for j in range(self.largeur):
+        for i in range(self.largeur):
+            for j in range(self.hauteur):
                 tableau.append((i, j))
         taille = int(len(tableau) * 0.1)
         return random.sample(tableau, taille)
     def get_tile(self, x,y):
         return self._tiles[x][y]
+    def open(self, x,y):
+        if(self._tiles[x][y].is_open):
+            raise Exception("la case est deja ouverte")
+        if(self._tiles[x][y].is_flagged):
+            raise Exception("la case est flaggée")
+        self._tiles[x][y].is_open = True
     def __str__(self):
         chaine_caractere = ""
         for i in range(self.largeur):
@@ -85,12 +91,16 @@ class Grid():
             chaine_caractere += "\n"
         return chaine_caractere
 class MineSweeper ():
-    def __init__(self, is_playing = False):
-        self.is_playing  = is_playing
+    def __init__(self):
+        self.is_playing = False
+        self._grid:Grid = None
     def open(self, x, y):
         if self.is_playing:
-            print("Ouvrir la case", x, y)
-        else :
+            if x >= self._grid.largeur and y >= self._grid.hauteur :
+                raise Exception("Les coordonnées sont hors la grille")
+            self._grid.open(x,y)
+            print(self._grid)
+        else:
             raise Exception("La partie n'est pas en cours")
 
     def flag(self, x, y):
@@ -101,24 +111,25 @@ class MineSweeper ():
 
     def newgame(self, hauteur = 0, largeur = 0):
         self.is_playing = True
-        grid = Grid()
-        print(grid)
+        self._grid = Grid()
+        print(self._grid)
 
 ms = MineSweeper()
 
 while True:
     coordinput = input("veuillez choisir 'x y' ou 'F x y' pour mettre un flag ou quit ou newgame")
     coord = coordinput.rsplit(" ")
-    if len(coord) == 2 and int(coord[0]) and int(coord[1]):
+    if len(coord) == 2 and isinstance(int(coord[0]), int) and isinstance(int(coord[1]), int) :
         try:
             ms.open(int(coord[0]), int(coord[1]))
         except Exception as e:
-            print("La partie n'est pas en cours")
-    elif len(coord) == 3 and coord[0] == "F" and int(coord[1]) and int(coord[2]):
+            print(str(e))
+
+    elif len(coord) == 3 and coord[0] == "F" and isinstance(int(coord[1]), int) and isinstance(int(coord[2]), int):
         try:
             ms.flag(int(coord[1]), int(coord[2]))
         except Exception as e:
-            print("La partie n'est pas en cours")
+            print(str(e))
     elif (coordinput=="quit"):
         break
     elif(coordinput=="newgame"):
