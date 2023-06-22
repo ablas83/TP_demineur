@@ -21,7 +21,8 @@ class Tile(metaclass=ABCMeta):
             return '#'
         elif self.is_open:
             raise NotImplementedError("La case est déjà ouverte")
-
+    def open(self):
+        self.is_open = True
 
 class Tilemine(Tile):
     def __str__(self):
@@ -85,7 +86,7 @@ class Grid():
             raise Exception("la case est deja ouverte")
         if(self._tiles[x][y].is_flagged):
             raise Exception("la case est flaggée")
-        self._tiles[x][y].is_open = True
+        self._open_full(x,y)
         if isinstance(self._tiles[x][y], TileHint):
             self.remaining -= 1
         else:
@@ -105,6 +106,8 @@ class Grid():
             self._tiles[x][y].is_flagged = False
         else:
             self._tiles[x][y].is_flagged = True
+    def _open_full(self,x, y):
+        self._tiles[x][y].open()
 class MineSweeper ():
     def __init__(self):
         self.is_playing = False
