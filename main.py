@@ -183,6 +183,9 @@ class MineSweeper:
     def is_lost(self):
         return self._grid.isMine
 
+    def get_grid(self):
+        return str(self._grid)
+
 
 class PlayGame:
     def __init__(self, MineSweeper, Player):
