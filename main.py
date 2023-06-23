@@ -284,6 +284,20 @@ class PlayerHuman(Player):
             print("Gagné !")
             print(MineSweeper._grid)
 
+
+class PlayerAI(Player):
+    def get_action(self, action=None, x=None, y=None, m=None):
+        if action == "open":
+            return ActionOpen(x, y)
+        elif action == "flag":
+            return ActionFlag(x, y)
+        elif action == "newgame":
+            return ActionNewGame()
+        elif action == "quit":
+            return ActionQuit()
+
+
+
 class PlayerRandom(Player):
     def get_action(self,action=None, x=None, y=None, m=None):
         x = random.randint(0,largeur_grille-1)
