@@ -1,3 +1,4 @@
+import abc
 import random
 import sys
 from abc import ABCMeta, abstractmethod
@@ -92,6 +93,7 @@ class Grid:
         taille = int((self.hauteur * self.largeur) * 0.1)
         self.remaining = (self.largeur * self.hauteur) - taille
         return random.sample(tableau, taille)
+
     def generateGrid(self, x, y):
         mines_coord = self._mines_coord(x, y)
         for k in mines_coord:
@@ -180,10 +182,12 @@ class MineSweeper:
     def is_lost(self):
         return self._grid.isMine
 
+
 class PlayGame:
     def __init__(self, MineSweeper, Player):
         self.MineSweeper = MineSweeper
         self.Player = Player
+
     def run (self):
         while True:
             coordinput = input(
@@ -215,7 +219,39 @@ class PlayGame:
                 self.MineSweeper.newgame(hauteur_grille, largeur_grille)
             else:
                 print("Syntaxe invalide")
+
+
 class Player:
     pass
+
+
+class Action (metaclass=ABCMeta):
+    @abc.abstractmethod
+    def __init__(self):
+        pass
+
+
+class ActionOpen(Action):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+class ActionFlag(Action):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+class ActionNewGame(Action):
+
+    def __init__(self):
+        pass
+
+
+class ActionQuit(Action):
+    def __init__(self):
+        pass
+
 
 ms = MineSweeper()
