@@ -221,7 +221,12 @@ class PlayGame:
                 print("Syntaxe invalide")
 
 
-class Player:
+class Player(metaclass=ABCMeta):
+    def get_action(self, action, x=None, y=None):
+        raise NotImplementedError
+
+
+class PlayerHuman(Player):
     def get_action(self, action, x=None, y=None):
         if action == "open":
             return ActionOpen(x, y)
