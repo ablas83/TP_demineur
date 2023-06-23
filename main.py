@@ -190,6 +190,21 @@ class PlayGame:
         self.Player = Player
 
     def run (self):
+        if isinstance(self.Player,PlayerOracle):
+            self.MineSweeper.newgame()
+            action = self.Player.get_action(m=self.MineSweeper)
+            if isinstance(action, ActionOpen):
+                self.MineSweeper.open(action.x, action.y)
+            while not self.MineSweeper.is_win() and not self.MineSweeper.is_lost():
+                try:
+                    action = self.Player.get_action(m=self.MineSweeper)
+                    if isinstance(action, ActionOpen):
+                        self.MineSweeper.open(action.x, action.y)
+                    if isinstance(action, ActionFlag):
+                        self.MineSweeper.flag(action.x, action.y)
+                except Exception as e:
+                    if (str(e) == "la case est deja ouverte"):
+                        continue
         if isinstance(self.Player,PlayerRandom):
             self.MineSweeper.newgame()
             action = self.Player.get_action()
@@ -200,6 +215,8 @@ class PlayGame:
                     action = self.Player.get_action()
                     if isinstance(action, ActionOpen):
                         self.MineSweeper.open(action.x, action.y)
+                    if isinstance(action, ActionFlag):
+                        self.MineSweeper.flag(action.x, action.y)
                 except Exception as e:
                     if(str(e) =="la case est deja ouverte"):
                         continue
@@ -241,12 +258,12 @@ class PlayGame:
 
 
 class Player(metaclass=ABCMeta):
-    def get_action(self, action=None, x=None, y=None):
+    def get_action(self, action=None, x=None, y=None, m=None):
         raise NotImplementedError
 
 
 class PlayerHuman(Player):
-    def get_action(self, action=None, x=None, y=None):
+    def get_action(self, action=None, x=None, y=None, m=None):
         if action == "open":
             return ActionOpen(x, y)
         elif action == "flag":
@@ -265,11 +282,20 @@ class PlayerHuman(Player):
             print(MineSweeper._grid)
 
 class PlayerRandom(Player):
-    def get_action(self,action=None, x=None, y=None):
+    def get_action(self,action=None, x=None, y=None, m=None):
         x = random.randint(0,largeur_grille-1)
         y = random.randint(0,hauteur_grille-1)
         return ActionOpen(x, y)
-
+class PlayerOracle(Player):
+    def get_action(self,action=None, x=None, y=None, m=None):
+        x = random.randint(0,largeur_grille-1)
+        y = random.randint(0,hauteur_grille-1)
+        if m._grid is None:
+            return ActionOpen(x, y)
+        if isinstance(m._grid._tiles[x][y], TileHint):
+            return ActionOpen(x, y)
+        else:
+            return ActionFlag(x,y)
 
 
 
@@ -305,6 +331,6 @@ class ActionQuit(Action):
 
 
 ms = MineSweeper()
-Player = PlayerRandom()
+Player = PlayerOracle()
 GamePlayer = PlayGame(ms, Player)
 GamePlayer.run()
