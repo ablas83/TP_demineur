@@ -222,7 +222,16 @@ class PlayGame:
 
 
 class Player:
-    pass
+    def get_action(self, action, x=None, y=None):
+        if action == "open":
+            return ActionOpen(x, y)
+        elif action == "flag":
+            return ActionFlag(x, y)
+        elif action == "newgame":
+            return ActionNewGame()
+        elif action == "quit":
+            return ActionQuit()
+
 
 
 class Action (metaclass=ABCMeta):
