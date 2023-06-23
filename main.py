@@ -232,6 +232,14 @@ class Player:
         elif action == "quit":
             return ActionQuit()
 
+    def gameover(self, MineSweeper):
+        if MineSweeper.is_lost() :
+            print("Perdu !")
+            print(MineSweeper._grid)
+        if MineSweeper.is_win() :
+            print("Gagné !")
+            print(MineSweeper._grid)
+
 
 
 class Action (metaclass=ABCMeta):
