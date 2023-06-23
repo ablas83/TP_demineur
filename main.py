@@ -81,7 +81,8 @@ class Grid:
         ]
         self.hauteur = hauteur
         self.largeur = largeur
-        self.remaining = 0
+        taille = int((self.hauteur * self.largeur) * 0.1)
+        self.remaining = (self.largeur * self.hauteur) - taille
         self.isMine = False  #pylint disable: invalid-name
 
     def _mines_coord(self, x, y):
@@ -189,45 +190,63 @@ class PlayGame:
         self.Player = Player
 
     def run (self):
-        while True:
-            coordinput = input(
-                "Veuillez choisir 'x y' ou 'F x y' pour mettre un flag, ou 'quit' ou 'newgame': "
-            )
-            coord = coordinput.rsplit(" ")
-            if (
-                    len(coord) == 2
-                    and isinstance(int(coord[0]), int)
-                    and isinstance(int(coord[1]), int)
-            ):
+        if isinstance(self.Player,PlayerRandom):
+            self.MineSweeper.newgame()
+            action = self.Player.get_action()
+            if isinstance(action, ActionOpen):
+                self.MineSweeper.open(action.x, action.y)
+            while not self.MineSweeper.is_win() and not self.MineSweeper.is_lost():
                 try:
-                    self.MineSweeper.open(int(coord[0]), int(coord[1]))
+                    action = self.Player.get_action()
+                    if isinstance(action, ActionOpen):
+                        self.MineSweeper.open(action.x, action.y)
                 except Exception as e:
-                    print(str(e))
-            elif (
+                    if(str(e) =="la case est deja ouverte"):
+                        continue
+        else:
+            while True:
+                coordinput = input(
+                    "Veuillez choisir 'x y' ou 'F x y' pour mettre un flag, ou 'quit' ou 'newgame': "
+                )
+                coord = coordinput.rsplit(" ")
+                if (
+                        len(coord) == 2
+                        and isinstance(int(coord[0]), int)
+                        and isinstance(int(coord[1]), int)
+                    ):
+                    try:
+                        action = self.Player.get_action("open", int(coord[0]), int(coord[1]))
+                        self.MineSweeper.open(action.x,action.y)
+                    except Exception as e:
+                        print(str(e))
+                elif (
                     len(coord) == 3
                     and coord[0] == "F"
                     and isinstance(int(coord[1]), int)
                     and isinstance(int(coord[2]), int)
-            ):
-                try:
-                    self.MineSweeper.flag(int(coord[1]), int(coord[2]))
-                except Exception as e:
-                    print(str(e))
-            elif coordinput == "quit":
-                break
-            elif coordinput == "newgame":
-                self.MineSweeper.newgame(hauteur_grille, largeur_grille)
-            else:
-                print("Syntaxe invalide")
+                ):
+                    try:
+                        action = self.Player.get_action("open", int(coord[1]), int(coord[2]))
+                        self.MineSweeper.flag(action.x,action.y)
+                    except Exception as e:
+                        print(str(e))
+                elif coordinput == "quit":
+                    self.Player.get_action("quit")
+                    break
+                elif coordinput == "newgame":
+                    self.Player.get_action("newgame")
+                    self.MineSweeper.newgame(hauteur_grille, largeur_grille)
+                else:
+                    print("Syntaxe invalide")
 
 
 class Player(metaclass=ABCMeta):
-    def get_action(self, action, x=None, y=None):
+    def get_action(self, action=None, x=None, y=None):
         raise NotImplementedError
 
 
 class PlayerHuman(Player):
-    def get_action(self, action, x=None, y=None):
+    def get_action(self, action=None, x=None, y=None):
         if action == "open":
             return ActionOpen(x, y)
         elif action == "flag":
@@ -244,6 +263,15 @@ class PlayerHuman(Player):
         if MineSweeper.is_win() :
             print("Gagné !")
             print(MineSweeper._grid)
+
+class PlayerRandom(Player):
+    def get_action(self,action=None, x=None, y=None):
+        x = random.randint(0,largeur_grille-1)
+        y = random.randint(0,hauteur_grille-1)
+        return ActionOpen(x, y)
+
+
+
 
 
 
@@ -277,3 +305,6 @@ class ActionQuit(Action):
 
 
 ms = MineSweeper()
+Player = PlayerRandom()
+GamePlayer = PlayGame(ms, Player)
+GamePlayer.run()
