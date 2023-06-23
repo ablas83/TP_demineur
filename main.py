@@ -3,8 +3,8 @@ import random
 import sys
 from abc import ABCMeta, abstractmethod
 
-hauteur_grille = int(sys.argv[1])  #pylint disable: invalid-name
-largeur_grille = int(sys.argv[2])  #pylint disable: invalid-name
+hauteur_grille = int(sys.argv[1])  # pylint disable: invalid-name
+largeur_grille = int(sys.argv[2])  # pylint disable: invalid-name
 
 
 class Tile(metaclass=ABCMeta):
@@ -83,7 +83,7 @@ class Grid:
         self.largeur = largeur
         taille = int((self.hauteur * self.largeur) * 0.1)
         self.remaining = (self.largeur * self.hauteur) - taille
-        self.isMine = False  #pylint disable: invalid-name
+        self.isMine = False  # pylint disable: invalid-name
 
     def _mines_coord(self, x, y):
         tableau = list()
@@ -102,10 +102,10 @@ class Grid:
             y = int(k[1])
             self._tiles[x][y] = Tilemine(self, x, y)
 
-    def get_tile(self, x, y):  #pylint disable: invalid-name
+    def get_tile(self, x, y):  # pylint disable: invalid-name
         return self._tiles[x][y]
 
-    def open(self, x, y):  #pylint disable: invalid-name
+    def open(self, x, y):  # pylint disable: invalid-name
         if self._tiles[x][y].is_open:
             raise Exception("la case est deja ouverte")
         if self._tiles[x][y].is_flagged:
@@ -120,7 +120,7 @@ class Grid:
             chaine_caractere += "\n"
         return chaine_caractere
 
-    def toggle_flag(self, x, y):  #pylint disable: invalid-name
+    def toggle_flag(self, x, y):  # pylint disable: invalid-name
         if self._tiles[x][y].is_open:
             raise Exception("la case est déjà ouverte")
         if self._tiles[x][y].is_flagged:
@@ -128,7 +128,7 @@ class Grid:
         else:
             self._tiles[x][y].is_flagged = True
 
-    def _open_full(self, x, y):  #pylint disable: invalid-name
+    def _open_full(self, x, y):  # pylint disable: invalid-name
         if not self._tiles[x][y].is_open:
             self._tiles[x][y].open()
             if isinstance(self._tiles[x][y], TileHint):
@@ -143,7 +143,7 @@ class MineSweeper:
         self.first_exec = False
         self._grid: Grid = None
 
-    def open(self, x, y):  #pylint disable: invalid-name
+    def open(self, x, y):  # pylint disable: invalid-name
         if self.is_playing:
             if not self.first_exec:
                 self._grid.generateGrid(x, y)
@@ -162,7 +162,7 @@ class MineSweeper:
         if not self.is_playing:
             self.first_exec = False
 
-    def flag(self, x, y):  #pylint disable: invalid-name
+    def flag(self, x, y):  # pylint disable: invalid-name
         if self.is_playing:
             if x >= self._grid.largeur or y >= self._grid.hauteur:
                 raise Exception("Les coordonnées sont hors de la grille")
@@ -192,8 +192,8 @@ class PlayGame:
         self.MineSweeper = MineSweeper
         self.Player = Player
 
-    def run (self):
-        if isinstance(self.Player,PlayerOracle):
+    def run(self):
+        if isinstance(self.Player, PlayerOracle):
             self.MineSweeper.newgame()
             action = self.Player.get_action(m=self.MineSweeper)
             if isinstance(action, ActionOpen):
@@ -206,9 +206,9 @@ class PlayGame:
                     if isinstance(action, ActionFlag):
                         self.MineSweeper.flag(action.x, action.y)
                 except Exception as e:
-                    if (str(e) == "la case est deja ouverte"):
+                    if str(e) == "la case est deja ouverte":
                         continue
-        if isinstance(self.Player,PlayerRandom):
+        if isinstance(self.Player, PlayerRandom):
             self.MineSweeper.newgame()
             action = self.Player.get_action()
             if isinstance(action, ActionOpen):
@@ -221,7 +221,7 @@ class PlayGame:
                     if isinstance(action, ActionFlag):
                         self.MineSweeper.flag(action.x, action.y)
                 except Exception as e:
-                    if(str(e) =="la case est deja ouverte"):
+                    if str(e) == "la case est deja ouverte":
                         continue
         else:
             while True:
@@ -230,13 +230,15 @@ class PlayGame:
                 )
                 coord = coordinput.rsplit(" ")
                 if (
-                        len(coord) == 2
-                        and isinstance(int(coord[0]), int)
-                        and isinstance(int(coord[1]), int)
-                    ):
+                    len(coord) == 2
+                    and isinstance(int(coord[0]), int)
+                    and isinstance(int(coord[1]), int)
+                ):
                     try:
-                        action = self.Player.get_action("open", int(coord[0]), int(coord[1]))
-                        self.MineSweeper.open(action.x,action.y)
+                        action = self.Player.get_action(
+                            "open", int(coord[0]), int(coord[1])
+                        )
+                        self.MineSweeper.open(action.x, action.y)
                     except Exception as e:
                         print(str(e))
                 elif (
@@ -246,8 +248,10 @@ class PlayGame:
                     and isinstance(int(coord[2]), int)
                 ):
                     try:
-                        action = self.Player.get_action("open", int(coord[1]), int(coord[2]))
-                        self.MineSweeper.flag(action.x,action.y)
+                        action = self.Player.get_action(
+                            "open", int(coord[1]), int(coord[2])
+                        )
+                        self.MineSweeper.flag(action.x, action.y)
                     except Exception as e:
                         print(str(e))
                 elif coordinput == "quit":
@@ -277,10 +281,10 @@ class PlayerHuman(Player):
             return ActionQuit()
 
     def gameover(self, MineSweeper):
-        if MineSweeper.is_lost() :
+        if MineSweeper.is_lost():
             print("Perdu !")
             print(MineSweeper._grid)
-        if MineSweeper.is_win() :
+        if MineSweeper.is_win():
             print("Gagné !")
             print(MineSweeper._grid)
 
@@ -297,28 +301,26 @@ class PlayerAI(Player):
             return ActionQuit()
 
 
-
 class PlayerRandom(Player):
-    def get_action(self,action=None, x=None, y=None, m=None):
-        x = random.randint(0,largeur_grille-1)
-        y = random.randint(0,hauteur_grille-1)
+    def get_action(self, action=None, x=None, y=None, m=None):
+        x = random.randint(0, largeur_grille - 1)
+        y = random.randint(0, hauteur_grille - 1)
         return ActionOpen(x, y)
+
+
 class PlayerOracle(Player):
-    def get_action(self,action=None, x=None, y=None, m=None):
-        x = random.randint(0,largeur_grille-1)
-        y = random.randint(0,hauteur_grille-1)
+    def get_action(self, action=None, x=None, y=None, m=None):
+        x = random.randint(0, largeur_grille - 1)
+        y = random.randint(0, hauteur_grille - 1)
         if m._grid is None:
             return ActionOpen(x, y)
         if isinstance(m._grid._tiles[x][y], TileHint):
             return ActionOpen(x, y)
         else:
-            return ActionFlag(x,y)
+            return ActionFlag(x, y)
 
 
-
-
-
-class Action (metaclass=ABCMeta):
+class Action(metaclass=ABCMeta):
     @abc.abstractmethod
     def __init__(self):
         pass
@@ -337,7 +339,6 @@ class ActionFlag(Action):
 
 
 class ActionNewGame(Action):
-
     def __init__(self):
         pass
 
