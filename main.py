@@ -184,38 +184,38 @@ class PlayGame:
     def __init__(self, MineSweeper, Player):
         self.MineSweeper = MineSweeper
         self.Player = Player
+    def run (self):
+        while True:
+            coordinput = input(
+                "Veuillez choisir 'x y' ou 'F x y' pour mettre un flag, ou 'quit' ou 'newgame': "
+            )
+            coord = coordinput.rsplit(" ")
+            if (
+                    len(coord) == 2
+                    and isinstance(int(coord[0]), int)
+                    and isinstance(int(coord[1]), int)
+            ):
+                try:
+                    self.MineSweeper.open(int(coord[0]), int(coord[1]))
+                except Exception as e:
+                    print(str(e))
+            elif (
+                    len(coord) == 3
+                    and coord[0] == "F"
+                    and isinstance(int(coord[1]), int)
+                    and isinstance(int(coord[2]), int)
+            ):
+                try:
+                    self.MineSweeper.flag(int(coord[1]), int(coord[2]))
+                except Exception as e:
+                    print(str(e))
+            elif coordinput == "quit":
+                break
+            elif coordinput == "newgame":
+                self.MineSweeper.newgame(hauteur_grille, largeur_grille)
+            else:
+                print("Syntaxe invalide")
 class Player:
     pass
 
 ms = MineSweeper()
-
-while True:
-    coordinput = input(
-        "Veuillez choisir 'x y' ou 'F x y' pour mettre un flag, ou 'quit' ou 'newgame': "
-    )
-    coord = coordinput.rsplit(" ")
-    if (
-        len(coord) == 2
-        and isinstance(int(coord[0]), int)
-        and isinstance(int(coord[1]), int)
-    ):
-        try:
-            ms.open(int(coord[0]), int(coord[1]))
-        except Exception as e:
-            print(str(e))
-    elif (
-        len(coord) == 3
-        and coord[0] == "F"
-        and isinstance(int(coord[1]), int)
-        and isinstance(int(coord[2]), int)
-    ):
-        try:
-            ms.flag(int(coord[1]), int(coord[2]))
-        except Exception as e:
-            print(str(e))
-    elif coordinput == "quit":
-        break
-    elif coordinput == "newgame":
-        ms.newgame(hauteur_grille, largeur_grille)
-    else:
-        print("Syntaxe invalide")
