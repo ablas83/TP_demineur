@@ -180,6 +180,12 @@ class MineSweeper:
     def is_lost(self):
         return self._grid.isMine
 
+class PlayGame:
+    def __init__(self, MineSweeper, Player):
+        self.MineSweeper = MineSweeper
+        self.Player = Player
+class Player:
+    pass
 
 ms = MineSweeper()
 
